@@ -2,7 +2,7 @@
 A proxy to try to understand the among us protocol
 ## Credits
 The broadcasting part of my code originally was written in  [this project](https://github.com/NickCis/among-us-proxy) by @NickCis
-# purpose
+## purpose
 the purpose of this is to decipher the among us protocol, create a documentation and allow the community to create servers and more. If you find anything out, you can pull a request and add it to the documentation below
 ## requirementy
 1. nodejs on a computer
