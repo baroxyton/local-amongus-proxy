@@ -19,4 +19,4 @@ forcefully disconnect the client from the server
 ### Packet 0x09 from the client
 disconnect from the server
 ### Packets that start with 0x0a or 0x0c
-Heartbeat, always counts up from both server and client; it's unclear if it serves any other purpose
+Heartbeat, always counts up from both server and client; it's unclear to me if it serves any other purpose
