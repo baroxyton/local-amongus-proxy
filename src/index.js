@@ -3,15 +3,18 @@ let config = {
   name:"proxy",
   //the shown amount of players, also can be a string
   players:"fake",
-  //ip of the device that will act as the client
-  client:"192.168.0.11",
+  //ip of the device, will be set when it connects
+  client:"0",
   //ip of the device that will act as the servere
   server:"192.168.0.24",
   //The clients port is not always the same. It will be changed when the client joins
   clientPort:0,
   //always the server port, don't change
   serverPort:22023,
-  showKeepalive:false
+  //show heartbeats/keepalive packages in the debug console
+  showKeepalive:true,
+  //only show heartbeats/keepalive packages in the debug console
+  keepaliveOnly:false
 }
 //require udp and create sockets
 const udp = require('dgram');
@@ -37,9 +40,9 @@ const message = Buffer.from(
     'hex'
   );
 discovery.bind(() => {
+  discovery.setBroadcast(true)
     this.discoveryInterval = setInterval(() => {
-      // 192.168.1.255
-      discovery.send(message, "47777", "192.168.0.11");
+      discovery.send(message, "47777", "192.168.0.255");
     }, 1000);
   });
 }
@@ -50,6 +53,7 @@ function stringToHex(str) {
 //listen to messages sent to the proxy server and sends them to the real one. When a player writes "disconnect" he will get a disconnection packet by the proxy
  fakeServer.on("message",function(msg,info){
 config.clientPort=info.port;
+config.client=info.address;
 logEvent(0,msg)
 if(msg.toString().includes("disconnect")){
   sendClient("\x09")
@@ -71,11 +75,14 @@ sendServer(msg)
    let isHeartbeat = ["0c","0a"].includes(texts[1].slice(0,2))
    let fromServer = sender
    let textSender = `the ${senders[sender]}`
-   let text = `package bin ${texts[0]} hex ${texts[1]} was sent from ${textSender}`;
+   let text = `package bin ${texts[0]} hex ${texts[1]} was sent from ${textSender} ${(new Date()).getMinutes()}:${(new Date()).getSeconds()}`;
    if(isHeartbeat){
- text = `heartbeat ${texts[1]} was sent from ${textSender}`
+ text = `heartbeat ${texts[1]} was sent from ${textSender} ${(new Date()).getMinutes()}:${(new Date()).getSeconds()}`
    }
    if(!config.showKeepalive&&isHeartbeat){
+return
+   }
+   if(config.keepaliveOnly&&!isHeartbeat){
 return
    }
    console.log(text)
